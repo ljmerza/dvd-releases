@@ -1,14 +1,40 @@
 const cheerio = require('cheerio');
-var rp = require('request-promise');
+const rp = require('request-promise');
+const moment = require('moment');
 
-const urls = [
-    'https://www.dvdsreleasedates.com/releases/2019/9/new-dvd-releases-september-2019',
-    'https://www.dvdsreleasedates.com/releases/2019/10/new-dvd-releases-october-2019',
-    'https://www.dvdsreleasedates.com/releases/2019/11/new-dvd-releases-november-2019',
-    'https://www.dvdsreleasedates.com/releases/2019/12/new-dvd-releases-december-2019',
-];
 
 const baseUrl = 'https://www.dvdsreleasedates.com';
+
+const today = moment();
+const thisYear = today.year();
+const nextYear = today.year() + 1;
+
+const thisMonth = today.month() + 1;
+const nextFewMonths = [{
+    monthNumber: thisMonth, 
+    year: thisYear, 
+    monthName: moment(thisMonth, 'MM').format('MMMM').toLowerCase()
+}];
+
+for(let i=1;i <= 5; i++){
+    let nextMonth = thisMonth + i;
+
+    const monthNumber = nextMonth > 12 ? nextMonth % 12 : nextMonth;
+    const year = nextMonth > 12 ? nextYear : thisYear;
+
+    nextFewMonths.push({
+        monthNumber, 
+        year, 
+        monthName: moment(monthNumber, 'MM').format('MMMM').toLowerCase()
+    });
+}
+
+const urls = nextFewMonths.map(month => {
+    return `${baseUrl}/releases/${month.year}/${month.monthNumber}/new-dvd-releases-${month.monthName}-${month.year}`;
+});
+
+// console.log({ urls });
+
 
 (async () => {
 
