@@ -4,16 +4,40 @@
   "description": "",
   "main": "dvd_releases.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/server/app.js",
+    "start:dev": "nodemon dist/server/app.js",
+    "build": "node ./node_modules/typescript/bin/tsc",
+    "gulp": "node ./node_modules/gulp/bin/gulp.js",
+    "test": "./node_modules/.bin/jest --detectOpenHandles",
+    "cron": "node ./dist/cron/cron.js"
   },
   "author": "",
   "license": "ISC",
+  "nodemonConfig": {
+    "ignore": [
+      "Client/*"
+    ],
+    "delay": "2000"
+  },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.1.0",
     "moment": "^2.24.0",
     "momentjs": "^2.0.0",
+    "mysql-promise": "^5.0.0",
+    "mysql2": "^1.6.5",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/mysql": "^2.15.6",
+    "del": "^5.0.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-nodemon": "^2.4.2",
+    "gulp-sass": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
+    "nodemon": "^1.19.1",
+    "typescript": "^3.5.3"
   }
 }

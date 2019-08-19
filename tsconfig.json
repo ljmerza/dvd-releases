@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "allowJs": false,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "alwaysStrict": true,
+        // "noUnusedLocals": true,
+        "skipLibCheck": true,
+        "lib": [
+            "es2016"
+        ],
+        "outDir": "./dist"
+    },
+    "include": [
+        "./src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "./src/**/*.test.ts"
+    ]
+}
