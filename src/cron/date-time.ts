@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 
 
-const MOVIE_RELEASE_FORMAT = 'MMMM, Do, YYYY';
+const MOVIE_RELEASE_FORMAT = 'MMMM DD, YYYY';
 const SQL_FORMAT = 'YYYY-MM-DD';
 
 export const toSqlDate = date => {

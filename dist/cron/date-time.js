@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment = require("moment");
-const MOVIE_RELEASE_FORMAT = 'MMMM, Do, YYYY';
+const MOVIE_RELEASE_FORMAT = 'MMMM DD, YYYY';
 const SQL_FORMAT = 'YYYY-MM-DD';
 exports.toSqlDate = date => {
     return moment(date, MOVIE_RELEASE_FORMAT).format(SQL_FORMAT);

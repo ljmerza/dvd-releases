@@ -31,9 +31,12 @@ const close = (connection) => __awaiter(this, void 0, void 0, function* () {
         yield logging_1.logError(`DB::close ${error}`);
     }
 });
-exports.saveMovie = (movie) => __awaiter(this, void 0, void 0, function* () {
+exports.saveMovieIfUndef = (movie) => __awaiter(this, void 0, void 0, function* () {
     try {
         const connection = yield connect();
+        const [dbResult] = yield connection.execute('SELECT id FROM `movies` WHERE name = ? AND dvd_release = ? AND digital_release = ?', [movie.name, movie.dvdRelease, movie.digitalRelease]);
+        if (dbResult.length !== 0)
+            return;
         yield connection.execute('INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)', [movie.name, movie.dvdRelease, movie.digitalRelease]);
         yield close(connection);
     }

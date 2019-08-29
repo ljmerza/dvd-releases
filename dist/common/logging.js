@@ -11,3 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logError = (error) => __awaiter(this, void 0, void 0, function* () {
     console.log({ error });
 });
+exports.logInfo = (info) => __awaiter(this, void 0, void 0, function* () {
+    console.log({ info });
+});

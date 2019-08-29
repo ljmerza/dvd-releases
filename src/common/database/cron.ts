@@ -23,9 +23,16 @@ const close = async connection => {
     }
 }
 
-export const saveMovie = async movie => {
+export const saveMovieIfUndef = async movie => {
     try {
         const connection = await connect();
+
+        const [dbResult] = await connection.execute(
+            'SELECT id FROM `movies` WHERE name = ? AND dvd_release = ? AND digital_release = ?',
+            [movie.name, movie.dvdRelease, movie.digitalRelease]
+        );
+        if (dbResult.length !== 0) return;
+
         await connection.execute(
             'INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)',
             [movie.name, movie.dvdRelease, movie.digitalRelease]

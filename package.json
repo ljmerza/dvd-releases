@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node dist/server/app.js",
     "start:dev": "nodemon dist/server/app.js",
+    "start:cron": "node ./dist/cron/cron.js",
     "build": "node ./node_modules/typescript/bin/tsc",
     "gulp": "node ./node_modules/gulp/bin/gulp.js",
-    "test": "./node_modules/.bin/jest --detectOpenHandles",
-    "cron": "node ./dist/cron/cron.js"
+    "test": "./node_modules/.bin/jest --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",

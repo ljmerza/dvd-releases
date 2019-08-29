@@ -3,7 +3,8 @@ import * as rp from 'request-promise';
 require('dotenv').config();
 
 import { toSqlDate, getNextFewMonths } from './date-time';
-import { saveMovie } from '../common'
+import { saveMovieIfUndef } from '../common/database'
+import { logInfo } from '../common'
 import { delay } from './date-time';
 
 
@@ -37,7 +38,9 @@ const urls = nextFewMonths.map(month => {
                     const release = $(this).text();
                     const [, dvdRelease, , digitalRelease] = release.split(/was set for |is set for | and available on|and iTunes on /g);
                     const formattedMovie = formatMovie({ name, dvdRelease, digitalRelease });
-                    await saveMovie(formattedMovie);
+
+                    logInfo(`saving ${formattedMovie.name} ${formattedMovie.dvdRelease} ${formattedMovie.digitalRelease}`);
+                    await saveMovieIfUndef(formattedMovie);
                 });
             }
 
@@ -52,12 +55,12 @@ const formatMovie = ({ name, dvdRelease, digitalRelease }) => {
     name = (name.text() || '').trim();
 
     dvdRelease = (dvdRelease || '').trim().replace(/\./, '');
-    dvdRelease = toSqlDate(dvdRelease);
-    if (/Invalid date/g.test(dvdRelease)) dvdRelease = null;
+    if (dvdRelease) dvdRelease = toSqlDate(dvdRelease);
+    if (!dvdRelease || /Invalid date/g.test(dvdRelease)) dvdRelease = null;
 
     digitalRelease = (digitalRelease || '').trim().replace(/\./, '');
-    digitalRelease = toSqlDate(digitalRelease);
-    if (/Invalid date/g.test(digitalRelease)) digitalRelease = null;
+    if (digitalRelease) digitalRelease = toSqlDate(digitalRelease);
+    if (!digitalRelease || /Invalid date/g.test(digitalRelease)) digitalRelease = null;
 
     return { name, dvdRelease, digitalRelease };
 }

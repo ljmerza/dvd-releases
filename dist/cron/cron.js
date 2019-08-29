@@ -12,6 +12,7 @@ const cheerio = require("cheerio");
 const rp = require("request-promise");
 require('dotenv').config();
 const date_time_1 = require("./date-time");
+const database_1 = require("../common/database");
 const common_1 = require("../common");
 const date_time_2 = require("./date-time");
 const baseUrl = 'https://www.dvdsreleasedates.com';
@@ -36,7 +37,8 @@ const urls = nextFewMonths.map(month => {
                         const release = $(this).text();
                         const [, dvdRelease, , digitalRelease] = release.split(/was set for |is set for | and available on|and iTunes on /g);
                         const formattedMovie = formatMovie({ name, dvdRelease, digitalRelease });
-                        yield common_1.saveMovie(formattedMovie);
+                        common_1.logInfo(`saving ${formattedMovie.name} ${formattedMovie.dvdRelease} ${formattedMovie.digitalRelease}`);
+                        yield database_1.saveMovieIfUndef(formattedMovie);
                     });
                 });
             }
@@ -49,12 +51,14 @@ const urls = nextFewMonths.map(month => {
 const formatMovie = ({ name, dvdRelease, digitalRelease }) => {
     name = (name.text() || '').trim();
     dvdRelease = (dvdRelease || '').trim().replace(/\./, '');
-    dvdRelease = date_time_1.toSqlDate(dvdRelease);
-    if (/Invalid date/g.test(dvdRelease))
+    if (dvdRelease)
+        dvdRelease = date_time_1.toSqlDate(dvdRelease);
+    if (!dvdRelease || /Invalid date/g.test(dvdRelease))
         dvdRelease = null;
     digitalRelease = (digitalRelease || '').trim().replace(/\./, '');
-    digitalRelease = date_time_1.toSqlDate(digitalRelease);
-    if (/Invalid date/g.test(digitalRelease))
+    if (digitalRelease)
+        digitalRelease = date_time_1.toSqlDate(digitalRelease);
+    if (!digitalRelease || /Invalid date/g.test(digitalRelease))
         digitalRelease = null;
     return { name, dvdRelease, digitalRelease };
 };

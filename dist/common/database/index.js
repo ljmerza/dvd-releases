@@ -1,4 +1,6 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-var cron_1 = require("./cron");
-exports.saveMovie = cron_1.saveMovie;
+__export(require("./cron"));
