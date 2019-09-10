@@ -1,6 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { logError } from '../logging';
-
+import { logError, logInfo } from '../logging';
 
 const connect = async () => {
     try {
@@ -23,22 +22,40 @@ const close = async connection => {
     }
 }
 
-export const saveMovieIfUndef = async movie => {
+export const saveMovieOrUpdateMovie = async movie => {
     try {
         const connection = await connect();
+        const [dbResult] = await connection.execute('SELECT id FROM `movies` WHERE name = ?', [movie.name]);
 
-        const [dbResult] = await connection.execute(
-            'SELECT id FROM `movies` WHERE name = ? AND dvd_release = ? AND digital_release = ?',
-            [movie.name, movie.dvdRelease, movie.digitalRelease]
-        );
-        if (dbResult.length !== 0) return;
-
-        await connection.execute(
-            'INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)',
-            [movie.name, movie.dvdRelease, movie.digitalRelease]
-        );
+        if (dbResult.length === 0){
+            logInfo(`saving ${movie.name} ${movie.dvdRelease} ${movie.digitalRelease}`);
+            await saveMovie(movie);
+        } else {
+            logInfo(`updating ${movie.name} ${movie.dvdRelease} ${movie.digitalRelease}`);
+            await updateMovie(movie);
+        }
+        
         await close(connection);
+
     } catch(error){
         await logError(`DB::saveMovie ${error}`);
     }
+}
+
+export const saveMovie = async movie => {
+    const connection = await connect();
+    await connection.execute(
+        'INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)',
+        [movie.name, movie.dvdRelease, movie.digitalRelease]
+    );
+    await close(connection);
+}
+
+export const updateMovie = async movie => {
+    const connection = await connect();
+    await connection.execute(
+        'UPDATE `movies` SET dvd_release = ?, digital_release = ? WHERE name = ?',
+        [movie.dvdRelease, movie.digitalRelease, movie.name]
+    );
+    await close(connection);
 }

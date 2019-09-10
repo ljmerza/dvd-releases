@@ -3,7 +3,7 @@ import * as rp from 'request-promise';
 require('dotenv').config();
 
 import { toSqlDate, getNextFewMonths } from './date-time';
-import { saveMovieIfUndef } from '../common/database'
+import { saveMovieOrUpdateMovie } from '../common/database'
 import { logInfo } from '../common'
 import { delay } from './date-time';
 
@@ -22,7 +22,7 @@ const urls = nextFewMonths.map(month => {
 
             // get month releases url data
             const data = await rp(urls[i]);
-            await delay();
+            await delay(200);
             const $ = cheerio.load(data);
 
             const movieUrls = getMovieLinks($);
@@ -39,8 +39,7 @@ const urls = nextFewMonths.map(month => {
                     const [, dvdRelease, , digitalRelease] = release.split(/was set for |is set for | and available on|and iTunes on /g);
                     const formattedMovie = formatMovie({ name, dvdRelease, digitalRelease });
 
-                    logInfo(`saving ${formattedMovie.name} ${formattedMovie.dvdRelease} ${formattedMovie.digitalRelease}`);
-                    await saveMovieIfUndef(formattedMovie);
+                    await saveMovieOrUpdateMovie(formattedMovie);
                 });
             }
 

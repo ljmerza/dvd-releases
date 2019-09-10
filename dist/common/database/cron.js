@@ -31,16 +31,31 @@ const close = (connection) => __awaiter(this, void 0, void 0, function* () {
         yield logging_1.logError(`DB::close ${error}`);
     }
 });
-exports.saveMovieIfUndef = (movie) => __awaiter(this, void 0, void 0, function* () {
+exports.saveMovieOrUpdateMovie = (movie) => __awaiter(this, void 0, void 0, function* () {
     try {
         const connection = yield connect();
-        const [dbResult] = yield connection.execute('SELECT id FROM `movies` WHERE name = ? AND dvd_release = ? AND digital_release = ?', [movie.name, movie.dvdRelease, movie.digitalRelease]);
-        if (dbResult.length !== 0)
-            return;
-        yield connection.execute('INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)', [movie.name, movie.dvdRelease, movie.digitalRelease]);
+        const [dbResult] = yield connection.execute('SELECT id FROM `movies` WHERE name = ?', [movie.name]);
+        if (dbResult.length === 0) {
+            logging_1.logInfo(`saving ${movie.name} ${movie.dvdRelease} ${movie.digitalRelease}`);
+            yield exports.saveMovie(movie);
+        }
+        else {
+            logging_1.logInfo(`updating ${movie.name} ${movie.dvdRelease} ${movie.digitalRelease}`);
+            yield exports.updateMovie(movie);
+        }
         yield close(connection);
     }
     catch (error) {
         yield logging_1.logError(`DB::saveMovie ${error}`);
     }
+});
+exports.saveMovie = (movie) => __awaiter(this, void 0, void 0, function* () {
+    const connection = yield connect();
+    yield connection.execute('INSERT INTO `movies` (name, dvd_release, digital_release) VALUES(?, ?, ?)', [movie.name, movie.dvdRelease, movie.digitalRelease]);
+    yield close(connection);
+});
+exports.updateMovie = (movie) => __awaiter(this, void 0, void 0, function* () {
+    const connection = yield connect();
+    yield connection.execute('UPDATE `movies` SET dvd_release = ?, digital_release = ? WHERE name = ?', [movie.dvdRelease, movie.digitalRelease, movie.name]);
+    yield close(connection);
 });

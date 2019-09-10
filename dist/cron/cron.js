@@ -13,7 +13,6 @@ const rp = require("request-promise");
 require('dotenv').config();
 const date_time_1 = require("./date-time");
 const database_1 = require("../common/database");
-const common_1 = require("../common");
 const date_time_2 = require("./date-time");
 const baseUrl = 'https://www.dvdsreleasedates.com';
 const nextFewMonths = date_time_1.getNextFewMonths();
@@ -24,7 +23,7 @@ const urls = nextFewMonths.map(month => {
     for (let i = 0; i < urls.length; i++) {
         try {
             const data = yield rp(urls[i]);
-            yield date_time_2.delay();
+            yield date_time_2.delay(200);
             const $ = cheerio.load(data);
             const movieUrls = getMovieLinks($);
             for (let j = 0; j < movieUrls.length; j++) {
@@ -37,8 +36,7 @@ const urls = nextFewMonths.map(month => {
                         const release = $(this).text();
                         const [, dvdRelease, , digitalRelease] = release.split(/was set for |is set for | and available on|and iTunes on /g);
                         const formattedMovie = formatMovie({ name, dvdRelease, digitalRelease });
-                        common_1.logInfo(`saving ${formattedMovie.name} ${formattedMovie.dvdRelease} ${formattedMovie.digitalRelease}`);
-                        yield database_1.saveMovieIfUndef(formattedMovie);
+                        yield database_1.saveMovieOrUpdateMovie(formattedMovie);
                     });
                 });
             }
