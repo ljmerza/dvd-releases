@@ -4,7 +4,6 @@ require('dotenv').config();
 
 import { toSqlDate, getNextFewMonths } from './date-time';
 import { saveMovieOrUpdateMovie } from '../common/database'
-import { logInfo } from '../common'
 import { delay } from './date-time';
 
 
