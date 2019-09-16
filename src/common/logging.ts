@@ -5,5 +5,5 @@ export const logError = async error => {
 }
 
 export const logInfo = async info => {
-    console.log({ info })
+    console.log(info)
 }
